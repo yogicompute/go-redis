@@ -1,7 +1,10 @@
 package main
 
 import (
+	"net/http"
 	"time"
+	
+	"go-redis/httpapi"
 	"go-redis/store"
 )
 
@@ -16,6 +19,16 @@ func main(){
 			time.Sleep(5 * time.Second)
 			store.SaveToDisk("dump.json")
 		}
+	}()
+
+	go func(){
+		http.HandleFunc("/set", httpapi.SetHandler(store))
+		http.HandleFunc("/get", httpapi.GetHandler(store))
+		http.HandleFunc("/del", httpapi.DelHandler(store))
+		http.HandleFunc("/exists", httpapi.ExistsHandler(store))
+		http.HandleFunc("/stats", httpapi.StatsHandler(store))
+
+		http.ListenAndServe(":8080", nil)
 	}()
 
 	StartServer(store)

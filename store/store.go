@@ -21,6 +21,8 @@ type Snapshot struct {
 	Data map[string]Item `json:"data"`
 }
 
+// <---------PERSISTENCE-----------> 
+
 func (s *Store) SaveToDisk(filename string) error{
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -55,6 +57,8 @@ func (s *Store) LoadFromDisk(filename string) error{
 	return nil
 }
 
+// <---------CLEANUP-----------> 
+
 func (s *Store) StartCleanup(interval time.Duration){
 	go func(){
 		for{
@@ -71,6 +75,15 @@ func (s *Store) StartCleanup(interval time.Duration){
 			s.mu.Unlock()
 		}
 	}()
+}
+
+func (s *Store) Stats() map[string]int{
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return map[string]int {
+		"keys":len(s.data),
+	}
 }
 
 func NewStore() *Store{
