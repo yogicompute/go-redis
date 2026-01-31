@@ -22,6 +22,8 @@ func main(){
 	}()
 
 	go func(){
+		http.Handle("/", http.FileServer(http.Dir("./web")))	
+
 		http.HandleFunc("/set", httpapi.SetHandler(store))
 		http.HandleFunc("/get", httpapi.GetHandler(store))
 		http.HandleFunc("/del", httpapi.DelHandler(store))

@@ -18,7 +18,7 @@ func SetHandler(store *store.Store) http.HandlerFunc {
 
 		var req struct {
 			Key string `json:"key"`
-			Val string `json:"val"`
+			Val string `json:"value"`
 			TTL int `json:"ttl"`
 		}
 
