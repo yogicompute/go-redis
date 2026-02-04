@@ -1,20 +1,23 @@
 package store
 
 import (
+	"maps"
 	"encoding/json"
 	"os"
 	"sync"
 	"time"
 )
 
-type Item struct{
-	Value string
-	ExpiresAt time.Time
-}
+
 
 type Store struct{
 	data map[string]Item
 	mu sync.Mutex
+}
+
+type Item struct{
+	Value string
+	ExpiresAt time.Time
 }
 
 type Snapshot struct {
@@ -140,4 +143,20 @@ func (s *Store) Exists(key string) bool{
 
 	_, ok := s.data[key]
 	return ok
+}
+
+func (s *Store) Export() map[string]Item{
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	copy := make(map[string]Item)
+	maps.Copy(copy, s.data)
+	return copy
+}
+
+func (s *Store) Import(data map[string]Item){
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.data = data
 }

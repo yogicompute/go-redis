@@ -13,6 +13,34 @@ func writeJSON(w http.ResponseWriter, status int, data any) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func ExportHandler(store *store.Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := store.Export()
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Disposition", "attachment; filename=snapshot.json")
+
+		json.NewEncoder(w).Encode(data)
+	}
+}
+
+func ImportHandler(storeObj *store.Store) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var data map[string]store.Item
+
+		err := json.NewDecoder(r.Body).Decode(&data)
+		if err != nil {
+			http.Error(w, "invalid snapshot file", 400)
+			return
+		}
+
+		storeObj.Import(data)
+
+		w.Write([]byte("imported successfully"))
+	}
+}
+
+
 func SetHandler(store *store.Store) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request){
 

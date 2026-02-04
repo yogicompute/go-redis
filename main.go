@@ -30,6 +30,10 @@ func main(){
 		http.HandleFunc("/exists", httpapi.ExistsHandler(store))
 		http.HandleFunc("/stats", httpapi.StatsHandler(store))
 
+		http.HandleFunc("/export", httpapi.ExportHandler(store))
+		http.HandleFunc("/import", httpapi.ImportHandler(store))
+
+
 		http.ListenAndServe(":8080", nil)
 	}()
 
